@@ -177,3 +177,4 @@ pyrightconfig.json
 
 data
 models
+.DS_Store
