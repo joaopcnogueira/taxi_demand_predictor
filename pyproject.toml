@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "src"
+version = "0.1.0"
+description = ""
+authors = ["João Nogueira <joao.nogueira@datarisk.io>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+requests = "^2.30.0"
+pandas = "^2.0.1"
+tqdm = "^4.65.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+jupyter = "^1.0.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
