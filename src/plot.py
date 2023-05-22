@@ -43,3 +43,23 @@ def plot_one_sample(
                         mode='markers', marker_symbol='x', marker_size=15,
                         name='prediction')             
     return fig
+
+
+def plot_ts(
+    ts_data: pd.DataFrame,
+    locations: Optional[List[int]] = None
+    ):
+    """
+    Plot time-series data
+    """
+    ts_data_to_plot = ts_data[ts_data.pickup_location_id.isin(locations)] if locations else ts_data
+
+    fig = px.line(
+        ts_data_to_plot,
+        x="pickup_hour",
+        y="rides",
+        color='pickup_location_id',
+        template='none',
+    )
+
+    fig.show()
