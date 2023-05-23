@@ -35,3 +35,12 @@ jobs:
       env:
         HOPSWORKS_API_KEY: ${{ secrets.HOPSWORKS_API_KEY }}
       run: poetry run jupyter nbconvert --to notebook --execute notebooks/12b_feature_pipeline_log_last_event.ipynb
+
+    - name: commit and push
+      run: |-
+        git config user.name "Automated"
+        git config user.email "actions@users.noreply.github.com"
+        git add -A
+        timestamp=$(date -u)
+        git commit -m "Latest data: ${timestamp}" || exit 0
+        git push
