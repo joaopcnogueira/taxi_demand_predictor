@@ -26,17 +26,17 @@ jobs:
       run: poetry install
       if: steps.cache.outputs.cache-hit != 'true'
         
-    - name: execute python workflows from bash script
+    - name: Execute Python Workflows from Bash Script
       env: 
         HOPSWORKS_API_KEY: ${{ secrets.HOPSWORKS_API_KEY }}
       run: poetry run jupyter nbconvert --to notebook --execute notebooks/12a_feature_pipeline.ipynb
 
-    - name: log the first and last event
+    - name: Log the First and Last Event
       env:
         HOPSWORKS_API_KEY: ${{ secrets.HOPSWORKS_API_KEY }}
       run: poetry run jupyter nbconvert --to notebook --execute notebooks/12b_feature_pipeline_log_last_event.ipynb
 
-    - name: commit and push
+    - name: Commit and Push
       run: |-
         git config user.name "Automated"
         git config user.email "actions@users.noreply.github.com"
