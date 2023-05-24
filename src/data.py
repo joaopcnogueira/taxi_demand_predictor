@@ -9,7 +9,7 @@ from tqdm import tqdm
 
 from src.paths import RAW_DATA_DIR
 
-
+# Functions to download and load raw data - BEGIN
 def download_one_file_of_raw_data(year: int, month: int) -> Path:
 
     URL = f"https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_{year}-{month:02d}.parquet"
@@ -114,21 +114,15 @@ def load_raw_data(
         # keep only time and origin of the ride
         rides = rides[['pickup_datetime', 'pickup_location_id']]
         return rides
+
+# Functions to download and load raw data - END
     
 
-def transform_raw_data_into_ts_data(
-    rides: pd.DataFrame
-) -> pd.DataFrame:
-    # sum rides per location and pickup_hour
-
+# Functions to aggregate raw data - BEGIN
+def agg_raw_data_by_hour(rides: pd.DataFrame) -> pd.DataFrame:
     rides['pickup_hour'] = rides['pickup_datetime'].dt.floor('H')
-    agg_rides = rides.groupby(['pickup_hour', 'pickup_location_id']).size().reset_index()
-    agg_rides.rename(columns={0: 'rides'}, inplace=True)
-
-    # add rows for (locations, pickup_hours)s with 0 rides
-    agg_rides_all_slots = add_missing_slots(agg_rides)
-
-    return agg_rides_all_slots
+    agg_rides = rides.groupby(['pickup_hour', 'pickup_location_id']).size().reset_index(name='rides')
+    return agg_rides
 
 
 def add_missing_slots(ts_data: pd.DataFrame) -> pd.DataFrame:
@@ -172,6 +166,18 @@ def add_missing_slots(ts_data: pd.DataFrame) -> pd.DataFrame:
     return output
 
 
+def transform_raw_data_into_ts_data(rides: pd.DataFrame) -> pd.DataFrame:
+    # sum rides per location and pickup_hour
+    agg_rides = agg_raw_data_by_hour(rides)
+
+    # add rows for (locations, pickup_hours)s with 0 rides
+    agg_rides_all_slots = add_missing_slots(agg_rides)
+
+    return agg_rides_all_slots
+
+# Functions to aggregate raw data - END
+
+# Functions to transform time series data into features and target - BEGIN
 def get_cutoff_indices_features_and_target(
     data: pd.DataFrame,
     input_seq_len: int,
@@ -254,3 +260,5 @@ def transform_ts_data_into_features_and_target(
     targets.reset_index(inplace=True, drop=True)
 
     return features, targets['target_rides_next_hour']
+
+# Functions to transform time series data into features and target - END
