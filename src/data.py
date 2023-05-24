@@ -25,6 +25,19 @@ def download_one_file_of_raw_data(year: int, month: int) -> Path:
         raise Exception(f"{URL} is not available")
 
 
+def select_and_rename_raw_columns(rides: pd.DataFrame) -> pd.DataFrame:
+    """
+    Selects and renames columns from the raw data
+    """
+    rides = rides[['tpep_pickup_datetime', 'PULocationID']].copy()
+    rides.rename(columns={
+        'tpep_pickup_datetime': 'pickup_datetime',
+        'PULocationID': 'pickup_location_id',
+    }, inplace=True)
+
+    return rides
+
+
 def validate_raw_data(
     rides: pd.DataFrame,
     year: int,
@@ -86,11 +99,7 @@ def load_raw_data(
         rides_one_month = pd.read_parquet(local_file)
 
         # rename columns
-        rides_one_month = rides_one_month[['tpep_pickup_datetime', 'PULocationID']]
-        rides_one_month.rename(columns={
-            'tpep_pickup_datetime': 'pickup_datetime',
-            'PULocationID': 'pickup_location_id',
-        }, inplace=True)
+        rides_one_month = select_and_rename_raw_columns(rides_one_month)
 
         # validate the file
         rides_one_month = validate_raw_data(rides_one_month, year, month)
